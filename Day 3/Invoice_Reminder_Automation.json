@@ -1,0 +1,170 @@
+{
+  "name": "Invoice Reminder Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KBQkTBGQuMKrlOj-xEf66EtcaFzG6rj9ERD44imDXe8",
+          "mode": "list",
+          "cachedResultName": " invoice data (n8n)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KBQkTBGQuMKrlOj-xEf66EtcaFzG6rj9ERD44imDXe8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KBQkTBGQuMKrlOj-xEf66EtcaFzG6rj9ERD44imDXe8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "cfeda061-d151-4f08-9b6c-aee6cb0e7cbf",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vy6qyx6PX9YRAlG2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6b5eac48-883b-415f-be0e-1bcf7003f49c",
+              "leftValue": "={{ $json['Due Date'] }}",
+              "rightValue": "={{ $now.toISODate() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "90cd6529-e71e-4c6f-84f7-d72d5f948896",
+              "leftValue": "={{ $json['Status']}}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "e0ed1908-dbd9-4fb4-8c3b-799763d650e3",
+      "name": "Filter Overdue Invoices"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email'] }}",
+        "subject": "=Invoice Reminder: {{ $json['Invoice Number'] }}",
+        "emailType": "text",
+        "message": "=Hi {{ $json['Client Name'] }}, This is a reminder that invoice {{ $json[\"Invoice Number\"] }} for ₹{{ $json['Amount'] }} was due on {{ $json['Due Date'] }}. Please make the payment at your earliest convenience. Thank you, Accounts Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "12274b7c-c5a2-4722-b74a-173213630c5c",
+      "name": "Gmail",
+      "webhookId": "df47511b-6ee2-45d9-9026-7dc90c79a43c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "djdoY8elMMUe8Kwl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        40,
+        0
+      ],
+      "id": "5cb01bc5-1b59-4573-8730-be82ff23e5dc",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter Overdue Invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Overdue Invoices": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6622b5b6-f730-45e8-bbaf-f24cac47c457",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2737bdb458805697c9461814c558dac2d537d18d90590ae1a5263f120f57621b"
+  },
+  "id": "U6wRzNWnyF1O7pm5",
+  "tags": []
+}
