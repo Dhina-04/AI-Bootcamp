@@ -1,0 +1,6 @@
+streamlit
+langchain>=0.1.16
+langchain-google-genai>=0.0.5
+google-generativeai>=0.4.1
+PyMuPDF  # For PDF
+python-docx  # For DOCX
